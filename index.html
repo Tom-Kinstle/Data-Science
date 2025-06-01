@@ -57,15 +57,23 @@
         /* Wave Separator */
         .wave-separator {
             height: 200px;
-            background: url('https://raw.githubusercontent.com/Tom-Kinstle/website/main/waves.jpg') center top/cover;
+            background: url('https://raw.githubusercontent.com/Tom-Kinstle/Data-Science/main/waves1.jpg') center/cover;
             margin: 4rem 0;
             position: relative;
             overflow: hidden;
             opacity: 0.6;
         }
 
-        .wave-separator:nth-of-type(even) {
-            background: url('https://raw.githubusercontent.com/Tom-Kinstle/website/main/Impression_waves.png') center bottom/cover;
+        .wave-separator:nth-of-type(2) {
+            background: url('https://raw.githubusercontent.com/Tom-Kinstle/Data-Science/main/waves2.png') center/cover;
+        }
+
+        .wave-separator:nth-of-type(3) {
+            background: url('https://raw.githubusercontent.com/Tom-Kinstle/Data-Science/main/waves3.jpg') center/cover;
+        }
+
+        .wave-separator:nth-of-type(4) {
+            background: url('https://raw.githubusercontent.com/Tom-Kinstle/Data-Science/main/waves4.png') center/cover;
         }
 
         .wave-separator::before {
@@ -127,7 +135,8 @@
         }
 
         .profile-img {
-            width: 450px;
+            width: 100%;
+            max-width: 450px;
             height: 450px;
             border-radius: 20px;
             background: url('https://raw.githubusercontent.com/Tom-Kinstle/website/main/me.png') center/cover;
@@ -169,8 +178,9 @@
         }
 
         .thinker-img {
-            width: 600px;
-            height: 600px;
+            width: 100%;
+            max-width: 400px;
+            height: 400px;
             background: url('https://raw.githubusercontent.com/Tom-Kinstle/website/main/Thinker.png') center/cover;
             border-radius: 10px;
             margin: 0 auto 1rem;
@@ -278,6 +288,7 @@
             justify-content: center;
             gap: 2rem;
             margin-top: 2rem;
+            flex-wrap: wrap;
         }
 
         .contact-btn {
@@ -307,40 +318,6 @@
                 font-size: 2.5rem;
             }
 
-            nav ul {
-                flex-wrap: wrap;
-                gap: 1rem;
-            }
-
-            .portfolio-grid {
-                grid-template-columns: 1fr;
-            }
-
-            /* Mobile image sizing fixes */
-            .profile-img {
-                width: 280px;
-                height: 280px;
-            }
-
-            .thinker-img {
-                width: 280px;
-                height: 280px;
-            }
-
-            .wsr-img {
-                height: 150px;
-            }
-
-            .wave-separator {
-                height: 100px;
-            }
-
-            /* Adjust hero section for mobile */
-            .hero-text {
-                text-align: center;
-                margin-bottom: 2rem;
-            }
-
             .hero-text p {
                 font-size: 1.1rem;
             }
@@ -349,13 +326,120 @@
                 font-size: 1rem;
             }
 
-            /* Make personality card more mobile-friendly */
+            /* Mobile profile image sizing */
+            .profile-img {
+                height: 300px;
+                max-width: 300px;
+            }
+
+            /* Mobile thinker image sizing */
+            .thinker-img {
+                height: 250px;
+                max-width: 250px;
+            }
+
+            nav ul {
+                flex-wrap: wrap;
+                gap: 1rem;
+                padding: 0 1rem;
+            }
+
+            .portfolio-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .project-card {
+                padding: 1.5rem;
+            }
+
+            h2 {
+                font-size: 2rem;
+            }
+
+            .about-text {
+                font-size: 1rem;
+            }
+
             .personality-card {
                 padding: 1.5rem;
             }
 
-            .mbti-text {
-                font-size: 0.85rem;
+            .role-card {
+                padding: 1.5rem;
+            }
+
+            .contact-links {
+                gap: 1rem;
+            }
+
+            .contact-btn {
+                padding: 0.8rem 1.5rem;
+                font-size: 0.9rem;
+            }
+
+            /* Smaller wave separators on mobile */
+            .wave-separator {
+                height: 120px;
+                margin: 2rem 0;
+            }
+        }
+
+        /* Extra small screens */
+        @media (max-width: 480px) {
+            .container {
+                padding: 0 15px;
+            }
+
+            .hero-text h1 {
+                font-size: 2rem;
+            }
+
+            .hero-text p {
+                font-size: 1rem;
+            }
+
+            /* Even smaller images for very small screens */
+            .profile-img {
+                height: 250px;
+                max-width: 250px;
+            }
+
+            .thinker-img {
+                height: 200px;
+                max-width: 200px;
+            }
+
+            .portfolio-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .project-card {
+                padding: 1rem;
+            }
+
+            .personality-card,
+            .role-card {
+                padding: 1rem;
+            }
+
+            h2 {
+                font-size: 1.8rem;
+            }
+
+            nav ul {
+                gap: 0.5rem;
+                font-size: 0.9rem;
+            }
+
+            .contact-links {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .contact-btn {
+                width: 200px;
+                text-align: center;
             }
         }
     </style>
@@ -528,8 +612,8 @@
             <div class="contact-links">
                 <a href="mailto:ThomasKinstle@gmail.com" class="contact-btn">Email</a>
                 <a href="https://www.linkedin.com/in/thomas-kinstle/" class="contact-btn" target="_blank">LinkedIn</a>
-                <a href="https://github.com/Tom-Kinstle/Data_projects_TripleTen" class="contact-btn" target="_blank">GitHub</a>
-                <a href="https://raw.githubusercontent.com/Tom-Kinstle/website/main/Thomas_Kinstle_Resume.pdf" class="contact-btn" target="_blank">Resume PDF</a>
+                <a href="https://github.com/Tom-Kinstle/Data-Science" class="contact-btn" target="_blank">GitHub</a>
+                <a href="https://raw.githubusercontent.com/Tom-Kinstle/website/main/resume_thomas_kinstle.pdf" class="contact-btn" target="_blank">Resume PDF</a>
             </div>
         </div>
     </section>
