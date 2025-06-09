@@ -1,0 +1,695 @@
+<!DOCTYPE html> <html lang="en"> <head> <meta charset="UTF-8"> <meta name="viewport" content="width=device-width, initial-scale=1.0"> <title>GlyphCraft - In the beginning...</title> <style> @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&displ
+
+pasted
+
+Still having no luck even grabbing the glyphs to move them into place.  The Journal should only begin showing the meaning of the first glyph, and then only display new definitions in the order they are added to tell the story (instead of being faintly visible).
+
+Edit
+I can see the issue with the drag and drop functionality and the journal visibility. The code is cut off, but I can identify and fix the main problems. Let me create a corrected version:
+
+
+GlyphCraft - Fixed Drag & Drop
+Interactive artifact 
+
+
+
+
+I can seem the glyphs raise when I place my cursor over them, but cannot click and hold them with my cursor to move them.
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GlyphCraft - In the beginning...</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&display=swap');
+        
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Cinzel', serif;
+            background: 
+                radial-gradient(circle at 30% 20%, rgba(101, 67, 33, 0.8) 0%, transparent 50%),
+                radial-gradient(circle at 70% 80%, rgba(139, 69, 19, 0.6) 0%, transparent 50%),
+                linear-gradient(135deg, #8B7355 0%, #A0522D 50%, #8B4513 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 20% 30%, rgba(160, 82, 45, 0.1) 1px, transparent 1px),
+                radial-gradient(circle at 80% 70%, rgba(101, 67, 33, 0.1) 1px, transparent 1px),
+                radial-gradient(circle at 40% 60%, rgba(139, 69, 19, 0.1) 1px, transparent 1px);
+            background-size: 50px 50px, 80px 80px, 30px 30px;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .game-container {
+            display: flex;
+            gap: 30px;
+            max-width: 1400px;
+            width: 100%;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .disk-container {
+            flex: 1.2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: 
+                radial-gradient(ellipse at 30% 20%, rgba(245, 245, 220, 0.95) 0%, rgba(222, 184, 135, 0.9) 100%);
+            border-radius: 25px 15px 30px 20px;
+            padding: 30px;
+            box-shadow: 
+                inset 0 0 30px rgba(139, 69, 19, 0.3),
+                0 15px 35px rgba(0, 0, 0, 0.4),
+                0 5px 15px rgba(0, 0, 0, 0.2);
+            border: 3px solid rgba(139, 69, 19, 0.8);
+            position: relative;
+        }
+
+        .disk-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 15% 25%, rgba(160, 82, 45, 0.1) 0%, transparent 30%),
+                radial-gradient(circle at 85% 75%, rgba(101, 67, 33, 0.1) 0%, transparent 40%);
+            border-radius: inherit;
+            pointer-events: none;
+        }
+
+        .disk-title {
+            font-size: 32px;
+            font-weight: 600;
+            color: #654321;
+            margin-bottom: 25px;
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            position: relative;
+            z-index: 1;
+        }
+
+        .disk {
+            width: 450px;
+            height: 450px;
+            background: 
+                radial-gradient(ellipse at 45% 35%, #F5DEB3 0%, #DEB887 40%, #CD853F 70%, #8B4513 100%);
+            position: relative;
+            box-shadow: 
+                inset 0 0 40px rgba(0, 0, 0, 0.3),
+                inset 0 0 20px rgba(139, 69, 19, 0.4),
+                0 10px 25px rgba(0, 0, 0, 0.4);
+            border: 4px solid #654321;
+            clip-path: polygon(
+                5% 20%, 15% 5%, 35% 8%, 55% 2%, 75% 10%, 90% 25%, 
+                95% 45%, 92% 65%, 88% 80%, 75% 92%, 55% 95%, 35% 90%, 
+                15% 85%, 8% 70%, 2% 50%, 8% 30%
+            );
+        }
+
+        .glyph-slot {
+            position: absolute;
+            width: 55px;
+            height: 55px;
+            background: rgba(245, 245, 220, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            border: 2px dashed rgba(101, 67, 33, 0.6);
+            clip-path: polygon(
+                10% 25%, 25% 10%, 75% 15%, 90% 30%, 85% 70%, 70% 85%, 
+                25% 90%, 15% 75%
+            );
+        }
+
+        .glyph-slot.center {
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 70px;
+            height: 70px;
+            border: 3px solid #8B4513;
+            background: rgba(255, 215, 0, 0.5);
+            clip-path: polygon(
+                15% 30%, 30% 10%, 70% 15%, 85% 35%, 80% 65%, 65% 85%, 
+                30% 90%, 20% 70%
+            );
+        }
+
+        .glyph-slot.occupied {
+            border-color: #228B22;
+            background: rgba(34, 139, 34, 0.3);
+        }
+
+        .glyph-slot.drop-target {
+            border-color: #4169E1 !important;
+            background: rgba(65, 105, 225, 0.4) !important;
+            transform: scale(1.1);
+        }
+
+        /* Spiral positioning for the 6 outer slots */
+        .glyph-slot:nth-child(1) { top: 15%; left: 45%; }  /* Position 1 */
+        .glyph-slot:nth-child(2) { top: 25%; left: 70%; }  /* Position 2 */
+        .glyph-slot:nth-child(3) { top: 50%; left: 80%; }  /* Position 3 */
+        .glyph-slot:nth-child(4) { top: 75%; left: 65%; }  /* Position 4 */
+        .glyph-slot:nth-child(5) { top: 80%; left: 35%; }  /* Position 5 */
+        .glyph-slot:nth-child(6) { top: 60%; left: 15%; }  /* Position 6 */
+
+        .glyph {
+            font-size: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            user-select: none;
+            color: #2F4F4F;
+            text-shadow: 2px 2px 3px rgba(0, 0, 0, 0.4);
+            filter: drop-shadow(1px 1px 2px rgba(0, 0, 0, 0.3));
+            width: 100%;
+            height: 100%;
+        }
+
+        .glyph:hover {
+            transform: scale(1.1);
+            filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.5));
+        }
+
+        .glyph.fixed {
+            cursor: default;
+            color: #8B4513;
+        }
+
+        .scrambled-area {
+            margin-top: 25px;
+            padding: 25px;
+            background: 
+                radial-gradient(ellipse at 40% 30%, rgba(245, 245, 220, 0.8) 0%, rgba(222, 184, 135, 0.7) 100%);
+            border-radius: 20px 15px 25px 10px;
+            border: 3px solid rgba(101, 67, 33, 0.8);
+            min-height: 90px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 
+                inset 0 0 15px rgba(139, 69, 19, 0.2),
+                0 5px 15px rgba(0, 0, 0, 0.3);
+            position: relative;
+            z-index: 1;
+        }
+
+        .scrambled-glyph {
+            width: 70px;
+            height: 70px;
+            background: 
+                radial-gradient(circle at 30% 30%, rgba(245, 245, 220, 0.95) 0%, rgba(222, 184, 135, 0.9) 100%);
+            border: 3px solid rgba(139, 69, 19, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            cursor: grab;
+            transition: all 0.3s ease;
+            box-shadow: 
+                0 4px 8px rgba(0, 0, 0, 0.3),
+                inset 0 0 10px rgba(245, 245, 220, 0.5);
+            color: #2F4F4F;
+            text-shadow: 2px 2px 3px rgba(0, 0, 0, 0.4);
+            clip-path: polygon(
+                12% 28%, 28% 8%, 72% 12%, 88% 32%, 84% 68%, 68% 88%, 
+                28% 92%, 18% 72%
+            );
+            user-select: none;
+        }
+
+        .scrambled-glyph:hover {
+            transform: scale(1.15);
+            box-shadow: 
+                0 6px 15px rgba(0, 0, 0, 0.4),
+                inset 0 0 15px rgba(245, 245, 220, 0.7);
+        }
+
+        .scrambled-glyph:active {
+            cursor: grabbing;
+        }
+
+        .scrambled-glyph.dragging {
+            cursor: grabbing;
+            transform: scale(1.2);
+            z-index: 1000;
+            opacity: 0.9;
+            filter: drop-shadow(4px 4px 8px rgba(0, 0, 0, 0.6));
+            pointer-events: none;
+        }
+
+        .journal-container {
+            flex: 1;
+            background: 
+                linear-gradient(135deg, rgba(245, 245, 220, 0.95) 0%, rgba(222, 184, 135, 0.9) 100%);
+            border-radius: 15px 25px 20px 30px;
+            padding: 30px;
+            box-shadow: 
+                inset 0 0 25px rgba(139, 69, 19, 0.2),
+                0 10px 30px rgba(0, 0, 0, 0.4);
+            border: 3px solid rgba(139, 69, 19, 0.8);
+            position: relative;
+        }
+
+        .journal-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 25% 25%, rgba(160, 82, 45, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 75% 75%, rgba(101, 67, 33, 0.08) 0%, transparent 50%);
+            border-radius: inherit;
+            pointer-events: none;
+        }
+
+        .journal-title {
+            font-size: 28px;
+            font-weight: 600;
+            color: #654321;
+            margin-bottom: 25px;
+            text-align: center;
+            border-bottom: 3px solid rgba(139, 69, 19, 0.6);
+            padding-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+            position: relative;
+            z-index: 1;
+        }
+
+        .journal-entry {
+            margin-bottom: 15px;
+            padding: 15px;
+            background: rgba(245, 245, 220, 0.8);
+            border-radius: 8px 12px 6px 10px;
+            border-left: 4px solid rgba(139, 69, 19, 0.6);
+            display: none;
+            transition: all 0.6s ease;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            position: relative;
+            z-index: 1;
+        }
+
+        .journal-entry.revealed {
+            display: block;
+            border-left-color: #228B22;
+            background: rgba(144, 238, 144, 0.4);
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+            animation: fadeInSlide 0.8s ease-out;
+        }
+
+        @keyframes fadeInSlide {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .journal-entry .glyph-symbol {
+            font-size: 24px;
+            margin-right: 12px;
+            color: #654321;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        .journal-entry .glyph-meaning {
+            font-weight: 600;
+            color: #2F4F4F;
+        }
+
+        .progress-section {
+            margin-top: 25px;
+            text-align: center;
+            padding: 25px;
+            background: rgba(245, 245, 220, 0.9);
+            border-radius: 12px 18px 10px 15px;
+            border: 3px solid rgba(139, 69, 19, 0.7);
+            box-shadow: inset 0 0 15px rgba(139, 69, 19, 0.1);
+            position: relative;
+            z-index: 1;
+        }
+
+        .roman-fraction {
+            font-size: 36px;
+            font-weight: 600;
+            color: #654321;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .choice-section {
+            margin-top: 20px;
+            padding: 20px;
+            background: rgba(255, 215, 0, 0.3);
+            border-radius: 10px 15px 8px 12px;
+            border: 3px solid rgba(218, 165, 32, 0.8);
+            display: none;
+        }
+
+        .choice-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #654321;
+            margin-bottom: 15px;
+        }
+
+        .choice-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+        }
+
+        .choice-glyph {
+            width: 55px;
+            height: 55px;
+            background: 
+                radial-gradient(circle at 30% 30%, rgba(245, 245, 220, 0.95) 0%, rgba(222, 184, 135, 0.9) 100%);
+            border: 3px solid rgba(139, 69, 19, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #2F4F4F;
+            text-shadow: 2px 2px 3px rgba(0, 0, 0, 0.4);
+            clip-path: polygon(
+                12% 28%, 28% 8%, 72% 12%, 88% 32%, 84% 68%, 68% 88%, 
+                28% 92%, 18% 72%
+            );
+        }
+
+        .choice-glyph:hover {
+            transform: scale(1.15);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+        }
+
+        .choice-glyph.correct {
+            border-color: #228B22;
+            background: rgba(144, 238, 144, 0.9);
+            animation: pulse-green 1s ease-in-out;
+        }
+
+        .choice-glyph.incorrect {
+            border-color: #DC143C;
+            background: rgba(255, 182, 193, 0.9);
+            animation: shake 0.5s ease-in-out;
+        }
+
+        @keyframes pulse-green {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.3); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-8px); }
+            75% { transform: translateX(8px); }
+        }
+
+        .completion-message {
+            margin-top: 20px;
+            padding: 18px;
+            background: rgba(144, 238, 144, 0.4);
+            border: 3px solid #228B22;
+            border-radius: 8px 12px 6px 10px;
+            text-align: center;
+            font-weight: 600;
+            color: #228B22;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+        }
+
+        .audio-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: 
+                radial-gradient(circle at 30% 30%, rgba(245, 245, 220, 0.95) 0%, rgba(222, 184, 135, 0.9) 100%);
+            border: 3px solid rgba(139, 69, 19, 0.8);
+            width: 55px;
+            height: 55px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 22px;
+            color: #654321;
+            transition: all 0.3s ease;
+            clip-path: polygon(
+                12% 28%, 28% 8%, 72% 12%, 88% 32%, 84% 68%, 68% 88%, 
+                28% 92%, 18% 72%
+            );
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .audio-toggle:hover {
+            transform: scale(1.1);
+            background: rgba(255, 215, 0, 0.9);
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="audio-toggle" onclick="toggleAudio()" title="Toggle Ambient Sound">
+        🔊
+    </div>
+
+    <div class="game-container">
+        <div class="disk-container">
+            <div class="disk-title">In the beginning...</div>
+            <div class="disk" id="disk">
+                <!-- Glyph slots positioned in spiral -->
+                <div class="glyph-slot" data-position="1"></div>
+                <div class="glyph-slot" data-position="2"></div>
+                <div class="glyph-slot" data-position="3"></div>
+                <div class="glyph-slot" data-position="4"></div>
+                <div class="glyph-slot" data-position="5"></div>
+                <div class="glyph-slot" data-position="6"></div>
+                <div class="glyph-slot center" data-position="center">
+                    <div class="glyph fixed">𐃸</div> <!-- Fixed person glyph -->
+                </div>
+            </div>
+            <div class="scrambled-area" id="scrambledArea">
+                <!-- Scrambled glyphs start here -->
+                <div class="scrambled-glyph" data-glyph="crowd">𐃃</div>
+                <div class="scrambled-glyph" data-glyph="joy">𐂠</div>
+                <div class="scrambled-glyph" data-glyph="mouth">𐃬</div>
+                <div class="scrambled-glyph" data-glyph="fire">𐂿</div>
+                <div class="scrambled-glyph" data-glyph="storm">𐃘</div>
+                <div class="scrambled-glyph" data-glyph="god">𐂺</div>
+            </div>
+        </div>
+
+        <div class="journal-container">
+            <div class="journal-title">📜 Glyph Journal</div>
+            <div id="journalEntries">
+                <div class="journal-entry revealed">
+                    <span class="glyph-symbol">𐃸</span>
+                    <span class="glyph-meaning">Person - The individual chosen by fate</span>
+                </div>
+                <div class="journal-entry" data-glyph="crowd">
+                    <span class="glyph-symbol">𐃃</span>
+                    <span class="glyph-meaning">Crowd - The gathering of many people</span>
+                </div>
+                <div class="journal-entry" data-glyph="joy">
+                    <span class="glyph-symbol">𐂠</span>
+                    <span class="glyph-meaning">Joy - Celebration and happiness</span>
+                </div>
+                <div class="journal-entry" data-glyph="mouth">
+                    <span class="glyph-symbol">𐃬</span>
+                    <span class="glyph-meaning">Mouth - Words spoken in arrogance</span>
+                </div>
+                <div class="journal-entry" data-glyph="fire">
+                    <span class="glyph-symbol">𐂿</span>
+                    <span class="glyph-meaning">Fire - Sacred flames of worship</span>
+                </div>
+                <div class="journal-entry" data-glyph="storm">
+                    <span class="glyph-symbol">𐃘</span>
+                    <span class="glyph-meaning">Storm - Nature's wrath unleashed</span>
+                </div>
+                <div class="journal-entry" data-glyph="god">
+                    <span class="glyph-symbol">𐂺</span>
+                    <span class="glyph-meaning">God - Divine power from above</span>
+                </div>
+            </div>
+            
+            <div class="progress-section">
+                <div class="roman-fraction" id="romanFraction">I / VII</div>
+                
+                <div class="choice-section" id="choiceSection">
+                    <div class="choice-title">Which glyph represents the true cause of the gods' anger?</div>
+                    <div class="choice-options" id="choiceOptions">
+                        <div class="choice-glyph" data-choice="crowd">𐃃</div>
+                        <div class="choice-glyph" data-choice="joy">𐂠</div>
+                        <div class="choice-glyph" data-choice="mouth">𐃬</div>
+                        <div class="choice-glyph" data-choice="fire">𐂿</div>
+                        <div class="choice-glyph" data-choice="storm">𐃘</div>
+                        <div class="choice-glyph" data-choice="god">𐂺</div>
+                    </div>
+                </div>
+                
+                <div class="completion-message hidden" id="completionMessage">
+                    Disk I completed! The storm's fury awakened the gods' wrath.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class GlyphCraftDisk1 {
+            constructor() {
+                this.glyphMappings = {
+                    'crowd': '𐃃',
+                    'joy': '𐂠', 
+                    'mouth': '𐃬',
+                    'fire': '𐂿',
+                    'storm': '𐃘',
+                    'god': '𐂺'
+                };
+                
+                this.correctOrder = ['crowd', 'joy', 'mouth', 'fire', 'storm', 'god'];
+                this.currentPlacements = new Array(6).fill(null);
+                this.correctAnswer = 'storm';
+                this.gameCompleted = false;
+                this.draggedElement = null;
+                this.dragOffset = { x: 0, y: 0 };
+                
+                this.initializeDragAndDrop();
+                this.updateProgress();
+            }
+            
+            initializeDragAndDrop() {
+                // Make scrambled glyphs draggable
+                const scrambledGlyphs = document.querySelectorAll('.scrambled-glyph');
+                scrambledGlyphs.forEach(glyph => {
+                    glyph.addEventListener('mousedown', this.handleMouseDown.bind(this));
+                    glyph.addEventListener('dragstart', e => e.preventDefault());
+                    glyph.draggable = false;
+                });
+                
+                // Add global mouse events
+                document.addEventListener('mousemove', this.handleMouseMove.bind(this));
+                document.addEventListener('mouseup', this.handleMouseUp.bind(this));
+                
+                // Add click handlers for choice section
+                const choiceGlyphs = document.querySelectorAll('.choice-glyph');
+                choiceGlyphs.forEach(glyph => {
+                    glyph.addEventListener('click', this.handleChoice.bind(this));
+                });
+            }
+            
+            handleMouseDown(e) {
+                e.preventDefault();
+                this.draggedElement = e.target.closest('.scrambled-glyph');
+                if (!this.draggedElement) return;
+                
+                this.draggedElement.classList.add('dragging');
+                
+                // Calculate offset from mouse to element center
+                const rect = this.draggedElement.getBoundingClientRect();
+                this.dragOffset.x = e.clientX - (rect.left + rect.width / 2);
+                this.dragOffset.y = e.clientY - (rect.top + rect.height / 2);
+                
+                // Set initial position
+                this.draggedElement.style.position = 'fixed';
+                this.draggedElement.style.left = (e.clientX - this.dragOffset.x - 35) + 'px';
+                this.draggedElement.style.top = (e.clientY - this.dragOffset.y - 35) + 'px';
+                this.draggedElement.style.zIndex = '1000';
+            }
+            
+            handleMouseMove(e) {
+                if (!this.draggedElement) return;
+                
+                e.preventDefault();
+                
+                // Move element with mouse
+                this.draggedElement.style.left = (e.clientX - this.dragOffset.x - 35) + 'px';
+                this.draggedElement.style.top = (e.clientY - this.dragOffset.y - 35) + 'px';
+                
+                // Check if over a valid drop target
+                const elementBelow = document.elementFromPoint(e.clientX, e.clientY);
+                const dropTarget = elementBelow?.closest('.glyph-slot:not(.center)');
+                
+                // Remove previous drop target highlights
+                document.querySelectorAll('.glyph-slot.drop-target').forEach(slot => {
+                    slot.classList.remove('drop-target');
+                });
+                
+                if (dropTarget && !dropTarget.classList.contains('center')) {
+                    dropTarget.classList.add('drop-target');
+                }
+            }
+            
+            handleMouseUp(e) {
+                if (!this.draggedElement) return;
+                
+                const elementBelow = document.elementFromPoint(e.clientX, e.clientY);
+                const dropTarget = elementBelow?.closest('.glyph-slot:not(.center)');
+                
+                // Remove drop target highlights
+                document.querySelectorAll('.glyph-slot.drop-target').forEach(slot => {
+                    slot.classList.remove('drop-target');
+                });
+                
+                if (dropTarget && !dropTarget.classList.contains('center')) {
+                    this.handleDropOnSlot(dropTarget);
+                } else {
+                    // Return to original position
+                    this.draggedElement.style.position = '';
+                    this.draggedElement.style.left = '';
+                    this.draggedElement.style.top = '';
+                    this.draggedElement.style.zIndex = '';
+                }
+                
+                this.draggedElement.classList.remove('dragging');
+                this.draggedElement = null;
+            }
+            
+            handleDropOnSlot(slot) {
+                const glyphType = this.draggedElement.dataset.glyph;
+                const position = parseInt(slot.dataset.position) - 1;
+                
+                // Remove any existing glyph in this slot
+                const existingGlyph = slot.querySelector('.glyph');
+                if (existingGlyph && !existingGlyph.classList.contains('fixed')) {
+                    // Return it to scrambled area
+                    const existingType = this.getGlyphTypeBySymbol(existingGlyph.textContent);
+                    this.returnToScrambledArea(existingGlyph.textContent, existingType);
+                    this.currentPlacements[position] = null;
+                }
+                
+                //
