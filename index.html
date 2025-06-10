@@ -659,13 +659,20 @@
 
 <!-- Game Section -->
 <section id="game">
+    <style>
+        /* Limit the game container height and hide overflow */
+        .game-container {
+            max-height: 520px;  /* slightly larger than iframe height */
+            overflow: hidden;
+        }
+    </style>
     <div class="container">
         <h2>Before you go, let's do some Exploratory Data Analysis!</h2>
         <div class="game-container">
             <iframe 
                 src="https://tom-kinstle.github.io/game/" 
                 width="100%" 
-                height="600" 
+                height="500" 
                 frameborder="0" 
                 style="border: 2px solid #333; border-radius: 10px; background: #111;">
                 <p>Your browser does not support iframes. 
